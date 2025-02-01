@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Form Validation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Include Intl-Tel-Input (For Country Flags & Dial Codes) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="style.css"> <!-- External CSS -->
+</head>
+<body>
+
+    <div class="container">
+        <h2>📞 Telephone Directory 📞</h2>
+
+        <form id="myForm">
+            <div class="form-group">
+                <label>First Name<span class="required">*</span></label>
+                <input type="text" id="firstName" placeholder="Enter your first name">
+                <p class="error" id="firstNameError"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Middle Name<span class="required">*</span></label>
+                <input type="text" id="middleName" placeholder="Enter your middle name">
+                <p class="error" id="middleNameError"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Last Name<span class="required">*</span></label>
+                <input type="text" id="lastName" placeholder="Enter your last name">
+                <p class="error" id="lastNameError"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address<span class="required">*</span></label>
+                <textarea id="address" placeholder="Enter your address" rows="4"></textarea>
+                <p class="error" id="addressError"></p>
+            </div>
+            <div class="form-group">
+                <label>Country<span class="required">*</span></label>
+                <select id="country">
+                    <option value="">Select Country</option>
+                    <option value="India">India</option>
+                    <option value="USA">USA</option>
+                </select>
+                <p class="error" id="countryError"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>State<span class="required">*</span></label>
+                <select id="state" disabled>
+                    <option value="">Select State</option>
+                </select>
+                <p class="error" id="stateError"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>City<span class="required">*</span></label>
+                <select id="city" disabled>
+                    <option value="">Select City</option>
+                </select>
+                <p class="error" id="cityError"></p>
+            </div>
+            
+
+            <div class="form-group">
+                <label>Email<span class="required">*</span></label>
+                <input type="email" id="email" placeholder="Enter your email">
+                <p class="error" id="emailError"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number<span class="required">*</span></label>
+                <input type="tel" id="phone" placeholder="Enter your phone number" maxlength="10">
+                <p class="error" id="phoneError"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Gender<span class="required">*</span></label>
+                <div class="gender-options">
+                    <label><input type="radio" name="gender" value="Male"> Male</label>
+                    <label><input type="radio" name="gender" value="Female"> Female</label>
+                    
+                </div>
+                <p class="error" id="genderError"></p>
+            </div>
+            <div class="terms-check">
+                <input type="checkbox" id="terms">
+                <label for="terms">I accept the terms and conditions</label>
+                <p class="error" id="termsError"></p>
+            </div>
+        </br>
+            <div class="button-group">
+                <button type="submit">Submit</button>
+                <button type="button" id="clearBtn">Clear</button>
+            </div>
+        </br>
+        <label><h3 class="p1">Filter For All filed</h3>
+            <br/>
+            <div class="filters-container">
+                <div class="form-group">
+                    <label for="filterFirstName">Filter by First Name:</label>
+                    <input type="text" id="filterFirstName" placeholder="Filter by First Name:">
+                </div>
+                <div class="form-group">
+                    <label for="filterLastName">Filter by Last Name:</label>
+                    <input type="text" id="filterLastName" placeholder="Enter Last Name">
+                </div>
+                <div class="form-group">
+                    <label for="filterMiddleName">Filter by Middle Name:</label>
+                    <input type="text" id="filterMiddleName" placeholder="Enter Middle Name">
+                </div>
+                <div class="form-group">
+                    <label for="filterState">Filter by State:</label>
+                    <input type="text" id="filterState" placeholder="Enter State">
+                </div>
+                <div class="form-group">
+                    <label for="filterCountry">Filter by Country:</label>
+                    <input type="text" id="filterCountry" placeholder="Enter Country">
+                </div>
+                <div class="form-group">
+                    <label for="filterCity">Filter by City:</label>
+                    <input type="text" id="filterCity" placeholder="Enter City">
+                </div>
+                <div class="form-group">
+                    <label for="filterPhone">Filter by Phone:</label>
+                    <input type="text" id="filterPhone" placeholder="Enter Phone">
+                </div>
+                <div class="form-group">
+                    <label for="filterAddress">Filter by Address:</label>
+                    <input type="text" id="filterAddress" placeholder="Enter Address">
+                </div>
+                <div class="form-group">
+                    <label for="filterGender">Filter by Gender:</label>
+                    <input type="text" id="filterGender" placeholder="Enter Gender">
+                </div>
+            </div></label>
+            <br/>
+            <label><h3 class="p1">Search for All Fields</h3>
+                <br/>
+                <div class="search-container">
+                    <div class="form-group">
+                        <label for="searchFirstName">Search by First Name:</label>
+                        <input type="text" id="searchFirstName" placeholder="Search by First Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchLastName">Search by Last Name:</label>
+                        <input type="text" id="searchLastName" placeholder="Search by Last Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchMiddleName">Search by Middle Name:</label>
+                        <input type="text" id="searchMiddleName" placeholder="Search by Middle Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchState">Search by State:</label>
+                        <input type="text" id="searchState" placeholder="Search by State">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchCountry">Search by Country:</label>
+                        <input type="text" id="searchCountry" placeholder="Search by Country">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchCity">Search by City:</label>
+                        <input type="text" id="searchCity" placeholder="Search by City">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchPhone">Search by Phone:</label>
+                        <input type="text" id="searchPhone" placeholder="Search by Phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchAddress">Search by Address:</label>
+                        <input type="text" id="searchAddress" placeholder="Search by Address">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchGender">Search by Gender:</label>
+                        <input type="text" id="searchGender" placeholder="Search by Gender">
+                    </div>
+                </div>
+            </label>
+            
+            
+            
+        </form>
+        
+       
+
+        <!-- Display Submitted Data in Horizontal Table -->
+        <div id="formContainer"></div>
+       
+    </div>
+  
+
+    <script src="script.js"></script> <!-- External JavaScript -->
+</body>
+</html>
