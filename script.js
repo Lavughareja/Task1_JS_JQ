@@ -2,6 +2,7 @@
 function validateForm() {
     let isValid = true;
 
+    // Get values
     let firstName = $("#firstName").val().trim();
     let middleName = $("#middleName").val().trim();
     let lastName = $("#lastName").val().trim();
@@ -20,6 +21,14 @@ function validateForm() {
     // First Name Validation
     if (firstName === "") {
         $("#firstNameError").text("⚠ First Name is required.");
+        isValid = false;
+    }
+    if (middleName === "") {
+        $("#middleNameError").text("⚠ Middle Name is required.");
+        isValid = false;
+    }
+    if (address === "") {
+        $("#addressError").text("⚠ Address is required.");
         isValid = false;
     }
 
@@ -78,6 +87,26 @@ function validateForm() {
 
     return isValid;
 }
+
+// Event listeners to remove validation messages when the user types or interacts with fields
+
+$(document).ready(function () {
+    // Remove error message when the user starts typing in a field
+    $("#firstName, #middleName, #lastName, #address, #email, #phone, #country, #state, #city").on("input", function () {
+        $(this).next(".error").text("");  // Clear error for the corresponding field
+    });
+
+    // Remove gender error when the user selects gender
+    $("input[name='gender']").change(function () {
+        $("#genderError").text("");
+    });
+
+    // Remove terms error when the user checks/unchecks the checkbox
+    $("#terms").change(function () {
+        $("#termsError").text("");
+    });
+});
+
 let formDataArray = JSON.parse(localStorage.getItem("formData")) || [];
 let currentPage = 1;
 const rowsPerPage = 5;
@@ -217,8 +246,18 @@ $(document).ready(function () {
     let iti = window.intlTelInput(input, {
         initialCountry: "in", // Set India as the default country
         separateDialCode: true,
-        preferredCountries: ["in", "us", "uk", "ca", "au"],
+        preferredCountries: ["in", "us"],
         utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+    });
+
+    // Update country code when country is selected
+    $("#country").change(function () {
+        let selectedCountry = $(this).val().toLowerCase(); // Get the selected country
+        if (selectedCountry === "india") {
+            iti.setCountry("in");  // Set country to India
+        } else if (selectedCountry === "usa") {
+            iti.setCountry("us");  // Set country to USA
+        }
     });
 
     // Phone number validation (10-digit)
@@ -230,7 +269,13 @@ $(document).ready(function () {
             $("#phoneError").text("");
         }
     });
+
+    // Prevent non-numeric input in Phone Number field
+    $("#phone").on("input", function () {
+        this.value = this.value.replace(/\D/g, ""); // Removes non-numeric characters
+    });
 });
+
 
 
 // Form Submit Event
@@ -244,13 +289,13 @@ $(document).ready(function () {
 
     // Handle form submission
     $("#myForm").submit(function (event) {
-        event.preventDefault(); // Prevent the form from submitting traditionally
+        event.preventDefault(); // Prevents the form from submitting traditionally (i.e., refreshing the page).
 
         if (!validateForm()) {
-            return; // Prevent further execution if form validation fails
+            return; //Calls a function validateForm(). If validation fails, it stops further execution.
         }
 
-        // Capture form data
+        // Retrieves values from the form fields using jQuery val().Gets the selected gender from the radio button.Stores all the values in variables.
         let firstName = $("#firstName").val();
         let middleName = $("#middleName").val();
         let lastName = $("#lastName").val();
@@ -291,6 +336,12 @@ $(document).ready(function () {
         // Clear the form fields after submission
         $("#myForm")[0].reset(); // Reset form fields
         $(".error").text(""); // Clear error messages
+         // Show success message
+         showSuccessMessage("Data submitted successfully!");
+         setTimeout(function () {
+            $(".success-message").fadeOut();
+        }, 2000);
+        
     });
 
     // Prevent non-numeric input in Phone Number field
@@ -305,7 +356,7 @@ $(document).ready(function () {
     };
 
     const cities = {
-        Gujarat: ["Ahmedabad", "Surat", "Vadodara"],
+        Gujarat: ["Ahmedabad", "Surat", "Vadodara","Morbi"],
         Maharashtra: ["Mumbai", "Pune", "Nagpur"],
         Rajasthan: ["Jaipur", "Jodhpur", "Udaipur"],
         California: ["Los Angeles", "San Francisco", "San Diego"],
@@ -337,6 +388,11 @@ $(document).ready(function () {
             });
         }
     });
+    function showSuccessMessage(message) {
+        // Create and display success message
+        let successMessage = $('<div class="success-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
+        $("body").prepend(successMessage); // Add the success message at the top of the body
+    }
 });
 
 // Function to display form data in a table format with pagination
@@ -396,9 +452,9 @@ function displayTable(formDataArray, currentPage) {
                     <td>${formData.state || 'N/A'}</td>
                     <td>${formData.city || 'N/A'}</td>
                     <td>
-                        <button class="editBtn">Edit</button>
-                        </br><br/>
-                        <button class="deleteBtn">Delete</button>
+                        <i class=" editBtn fa-solid fa-pen editIcon"></i>
+                       
+                        <i class=" deleteBtn fa-solid fa-trash deleteIcon"></i>
                     </td>
                 </tr>`;
         }
@@ -434,6 +490,7 @@ function displayTable(formDataArray, currentPage) {
         let rowIndex = $(this).closest("tr").data("index");
         let formData = formDataArray[rowIndex];
 
+
         // Ensure formData exists before filling the form fields
         if (formData) {
             $("#firstName").val(formData.firstName);
@@ -446,18 +503,29 @@ function displayTable(formDataArray, currentPage) {
             $("#country").val(formData.country).trigger("change");
             $("#state").val(formData.state).trigger("change");
             $("#city").val(formData.city);
-
+            $("#editIndex").val(rowIndex);
             // Remove the data from localStorage and re-display the updated table
             formDataArray.splice(rowIndex, 1);
+            // showUpadateMessage("Data Edit successfully!");
+            //  setTimeout(function () {
+            // $(".upadate-message").fadeOut();
+            // }, 2000);
             localStorage.setItem("formData", JSON.stringify(formDataArray));
             displayTable(formDataArray, currentPage);
         }
+            // function showUpadateMessage(message) {
+            //     // Create and display success message
+            //     let successMessage = $('<div class="upadate-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
+            //     $("body").prepend(successMessage); // Add the success message at the top of the body
+            // }
+
+        
     });
 
     // Delete Button functionality
    $(".deleteBtn").click(function () {
     let rowIndex = $(this).closest("tr").data("index");
-
+     
     // Show confirmation dialog
     let confirmation = window.confirm("Are you sure you want to delete this record?");
 
@@ -465,10 +533,19 @@ function displayTable(formDataArray, currentPage) {
     if (confirmation) {
         if (formDataArray[rowIndex]) {
             formDataArray.splice(rowIndex, 1);  // Remove the data
+            showdeleteMessage("Data delete successfully!");
+             setTimeout(function () {
+            $(".delete-message").fadeOut();
+            }, 2000);
             localStorage.setItem("formData", JSON.stringify(formDataArray)); // Update localStorage
             displayTable(formDataArray, currentPage);  // Re-display the table after deletion
         }
     }
+    function showdeleteMessage(message) {
+                // Create and display success message
+                let successMessage = $('<div class="delete-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: red; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
+                $("body").prepend(successMessage); // Add the success message at the top of the body
+            }
 });
 $("#clearBtn").click(function () {
     // Reset form fields
