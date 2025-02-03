@@ -96,10 +96,14 @@ body {
     overflow-y: auto;
 }
 .editBtn{
-    background-color: rgb(47, 209, 6);
+    background-color:white;
+    
+    
+    
 }
+
 .deleteBtn{
-    background-color: rgba(236, 42, 16, 0.986);
+    background-color: white;
 }
 
 h2 {
@@ -156,6 +160,7 @@ button {
     font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
+    display: inline-block;
 }
 
 button:hover {
@@ -349,7 +354,9 @@ button.editBtn, button.deleteBtn {
     width: auto;
     padding: 6px 12px;
     font-size: 12px;
+    
 }
+
 
 button.editBtn:hover, button.deleteBtn:hover {
     background: #ff6f61;
@@ -396,6 +403,15 @@ body {
     color: white; /* Ensure text inside is white */
 }
 
+h2 {
+    font-family: 'Georgia', serif;
+    font-size: 30px;
+    font-weight: bold;
+    font-style: italic;
+    color: white;
+    text-align: center;
+}
+
 /* Country code styling */
 .iti__selected-dial-code {
     font-weight: bold;
@@ -421,5 +437,57 @@ body {
 /* Selected country */
 .iti__country.iti__highlight {
     background-color: #666;
+}
+label{
+    font-weight: bold;
+    color: white ;
+}
+
+td {
+    white-space: nowrap; /* Prevents wrapping */
+}
+
+td {
+    white-space: nowrap; /* Prevents wrapping */
+}
+
+/* Common styles for icons */
+.editIcon, .deleteIcon {
+    font-size: 18px;  /* Adjust icon size */
+    cursor: pointer;  /* Changes cursor to pointer */
+    margin: 0 10px;   /* Adds space between icons */
+    padding: 10px;    /* Increase size */
+    border-radius: 50%; /* Makes the shape rounded */
+    display: inline-flex; /* Ensures proper alignment */
+    align-items: center;
+    justify-content: center;
+    width: 40px;  /* Sets width */
+    height: 40px; /* Sets height */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+}
+
+/* Edit icon styling */
+.editIcon {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White icon color */
+}
+
+/* Delete icon styling */
+.deleteIcon {
+    background-color: #f44336; /* Red background */
+    color: white; /* White icon color */
+}
+
+/* Hover Effects */
+.editIcon:hover {
+    background-color: #45a049; /* Darker green */
+    color:black; /* Yellow color on hover */
+    transform: scale(1.1); /* Slight zoom effect */
+}
+
+.deleteIcon:hover {
+    background-color: #d32f2f; /* Darker red */
+    color: #000000; /* Black color on hover */
+    transform: scale(1.1); /* Slight zoom effect */
 }
 
