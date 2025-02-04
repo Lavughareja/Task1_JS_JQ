@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Include jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
     
     <!-- Include Intl-Tel-Input (For Country Flags & Dial Codes) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <link rel="stylesheet" href="style.css"> <!-- External CSS -->
 </head>
 <body>
@@ -24,10 +24,10 @@
        
         <h2>📞 Telephone Directory 📞</h2>
 
-        <form id="myForm">
+        <form id="myForm"  autocomplete="off">
             <div class="form-group">
                 <label>First Name<span class="required">*</span></label>
-                <input type="text" id="firstName" placeholder="Enter your first name">
+                <input type="text" id="firstName" placeholder="Enter your first name" >
                 <p class="error" id="firstNameError"></p>
             </div>
 
@@ -74,8 +74,6 @@
                 </select>
                 <p class="error" id="cityError"></p>
             </div>
-            
-
             <div class="form-group">
                 <label>Email<span class="required">*</span></label>
                 <input type="email" id="email" placeholder="Enter your email">
@@ -104,10 +102,11 @@
             </div>
         </br>
             <div class="button-group">
-                <button type="submit">Submit</button>
+                <button type="submit" id="submitbtn">Submit</button>
                 <button type="button" id="clearBtn">Clear</button>
             </div>
         </br>
+    </br>
         <label><h3 class="p1">Filter For All filed</h3>
             <br/>
             <div class="filters-container">
@@ -190,19 +189,14 @@
                     </div>
                 </div>
             </label>
-            
-            
-            
-        </form>
-        
-       
-
+          </form>
         <!-- Display Submitted Data in Horizontal Table -->
         <div id="formContainer"></div>
        
     </div>
-  
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script> <!-- External JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>
