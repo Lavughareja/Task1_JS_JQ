@@ -109,7 +109,8 @@ $(document).ready(function () {
 
 let formDataArray = JSON.parse(localStorage.getItem("formData")) || [];
 let currentPage = 1;
-const rowsPerPage = 5;
+const rowsPerPage = 3;
+
 
 // Function to search data in the table
 function searchData() {
@@ -133,7 +134,7 @@ function searchData() {
         (searchCountry === "" || item.country.toLowerCase().includes(searchCountry)) &&
         (searchState === "" || item.state.toLowerCase().includes(searchState)) &&
         (searchCity === "" || item.city.toLowerCase().includes(searchCity))
-    );
+    ); 
 
     displayTable(filteredData, 1); // Show filtered results from page 1
 }
@@ -328,7 +329,7 @@ $(document).ready(function () {
         formDataArray.push(formData);
 
         // Save the updated form data array back to localStorage
-        localStorage.setItem("formData", JSON.stringify(formDataArray));
+        localStorage.setItem("formData",JSON.stringify(formDataArray));
 
         // Display the table with all submitted information
         displayTable(formDataArray, 1);  // Display first page
@@ -395,7 +396,6 @@ $(document).ready(function () {
     }
 });
 
-// Function to display form data in a table format with pagination
 // Function to display form data in a table format with pagination
 function displayTable(formDataArray, currentPage) {
     if (!formDataArray || formDataArray.length === 0) {
@@ -504,23 +504,13 @@ function displayTable(formDataArray, currentPage) {
             $("#state").val(formData.state).trigger("change");
             $("#city").val(formData.city);
             $("#editIndex").val(rowIndex);
-            // Remove the data from localStorage and re-display the updated table
+            
             formDataArray.splice(rowIndex, 1);
-            // showUpadateMessage("Data Edit successfully!");
-            //  setTimeout(function () {
-            // $(".upadate-message").fadeOut();
-            // }, 2000);
+            
             localStorage.setItem("formData", JSON.stringify(formDataArray));
             displayTable(formDataArray, currentPage);
         }
-            // function showUpadateMessage(message) {
-            //     // Create and display success message
-            //     let successMessage = $('<div class="upadate-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
-            //     $("body").prepend(successMessage); // Add the success message at the top of the body
-            // }
-
-        
-    });
+     });
 
     // Delete Button functionality
    $(".deleteBtn").click(function () {
@@ -560,4 +550,6 @@ $("#clearBtn").click(function () {
 });
 
 }
-
+$(document).ready(function () {
+    $("input").attr("autocomplete", "off");
+});
