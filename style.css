@@ -7,7 +7,7 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-/* Add red asterisk to required fields */
+/* Add red asterisk to required fields */       
 label .required {
     color: red;
     margin-left: 25px; 
@@ -100,10 +100,12 @@ body {
     
     
     
+    
 }
 
 .deleteBtn{
     background-color: white;
+    
 }
 
 h2 {
@@ -237,6 +239,7 @@ th, td {
 th {
     background-color: #00ffcc;
     font-weight: 600;
+    color: #000000;
 }
 
 td {
@@ -368,11 +371,6 @@ td button {
     font-size: 14px;
 }
 
-
-
-
-
-
 body {
     font-family: Arial, sans-serif;
 }
@@ -491,3 +489,113 @@ td {
     transform: scale(1.1); /* Slight zoom effect */
 }
 
+#submitbtn, #clearBtn {
+    font-size: 20px;             /* Increased text size */
+    padding: 12px 24px;          /* Adjusted padding for better touch support */
+    width: 80%;                  /* Wider button for better accessibility */
+    max-width: 300px;            /* Increased max width */
+    height: auto;
+    border: none;
+    border-radius: 8px;          /* More rounded for a modern look */
+    color: black;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    display: block;
+    margin: 15px auto;           /* Centering with better spacing */
+}
+
+/* Submit button */
+#submitbtn {
+    background-color: #4CAF50;
+}
+
+#submitbtn:hover {
+    background-color: #45a049;
+    transform: scale(1.08);     /* Slightly larger on hover */
+}
+
+/* Clear button */
+#clearBtn {
+    background-color: #f44336;
+}
+
+#clearBtn:hover {
+    background-color: #d32f2f;
+    transform: scale(1.08);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #submitbtn, #clearBtn {
+        font-size: 18px;
+        padding: 10px 22px;
+        width: 90%;              /* Increase width for smaller screens */
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    #submitbtn, #clearBtn {
+        font-size: 16px;
+        padding: 10px 20px;
+        width: 100%;             /* Full width on mobile */
+        max-width: none;         /* Allow full flexibility */
+    }
+}
+
+  
+#prevPage, #nextPage {
+    color: #000000;
+    width: 10%;
+    min-width: 80px;    /* Ensures a minimum width for small screens */
+    height: auto;       /* Keeps height flexible */
+    padding: 10px;      /* Adds padding for better touch accessibility */
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    background-color: #00ffcc; /* Light background for visibility */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: inline-block; /* Prevents collapsing */
+}
+
+/* Hover effect */
+#prevPage:hover, #nextPage:hover {
+    background-color: #00ffcc;
+    transform: scale(1.05);
+}
+
+/* Responsive container */
+.pagination-container {
+    display: flex;
+    justify-content: space-between; /* Keeps buttons apart */
+    align-items: center;
+    width: 100%;
+    max-width: 600px; /* Adjust based on layout */
+    margin: auto;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #prevPage, #nextPage {
+        width: 20%;   /* Increase width slightly for better visibility */
+        min-width: 60px;
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination-container {
+        justify-content: center;
+        gap: 15px; /* Adds spacing on smaller screens */
+    }
+
+    #prevPage, #nextPage {
+        width: 25%;
+        min-width: 50px;
+        font-size: 12px;
+        padding: 6px;
+    }
+}
