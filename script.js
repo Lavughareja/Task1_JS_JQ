@@ -1,6 +1,27 @@
+//==========JavaScript========
 let formDataArray = JSON.parse(localStorage.getItem("formData")) || [];
 let currentPage = 1;
 const rowsPerPage = 3;
+
+function startTimer() {
+    let timeLeft = 30; // Set timer duration
+    let timer = setInterval(function () {
+        timeLeft--;
+        $("#timer span").text(timeLeft);
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            $("input, button").prop("disabled", true); // Disable form
+            $("#timer").text("Time is up! Form is disabled.");
+        }
+    }, 1000);
+}
+
+// Call the function to start the timer
+startTimer();
+
+
+
 function validateForm() {
     let isValid = true;
     let firstName = $("#firstName").val().trim();
@@ -54,7 +75,7 @@ function validateForm() {
     }
 
     if (!gender) {
-        $("#gender").last().after('<div class="error-msg">⚠ Please select your gender.</div>');
+        $("#gender").after('<div class="error-msg">⚠ Please select your gender.</div>');
         isValid = false;
     }
 
@@ -80,20 +101,12 @@ function validateForm() {
 
     return isValid;
 }
-$("input, textarea, select").on("input change", function() {
-    
-    $(this).siblings(".error-msg").remove();
-});
-$("input[name='gender']").on("change", function() {
-    $("#gender").next(".error-msg").remove();
-});
-
-
-$(".terms-check input[type='checkbox']").on("change", function() {
-    $(".terms-check").next(".error-msg").remove();
-});
-
-
+setInterval(myTimer);
+ 
+function myTimer() {
+  const d = new Date();
+  document.getElementById("demo").innerHTML = d.toLocaleTimeString();
+}
 function displayTable(formDataArray, currentPage) {
     if (!formDataArray || formDataArray.length === 0) {
         console.log("No data available.");
@@ -129,7 +142,7 @@ function displayTable(formDataArray, currentPage) {
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>`;
+            <tbody id="tableBody">`;
 
    
     for (let i = startIndex; i < endIndex; i++) {
@@ -202,8 +215,6 @@ function displayTable(formDataArray, currentPage) {
             $("#state").val(formData.state).trigger("change");
             $("#city").val(formData.city);
             
-            $("#editIndex").val(rowIndex);
-            
             formDataArray.splice(rowIndex, 1);
             
             localStorage.setItem("formData", JSON.stringify(formDataArray));
@@ -230,27 +241,28 @@ function displayTable(formDataArray, currentPage) {
             displayTable(formDataArray, currentPage); 
         }
     }
-    function showdeleteMessage(message) {
+function showdeleteMessage(message) {
                 
                 let successMessage = $('<div class="delete-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: red; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
                 $("body").prepend(successMessage);
             }
 });
 $("#clearBtn").click(function () {
-    
     $("#myForm")[0].reset(); 
 
-    
     $(".error-msg").remove();  
     $("input, select").removeClass("error");  
 
-   
-    $("#firstName, #middleName, #lastName, #address, #email, #phone, #country, #state, #city").val('');
+    $("#firstName, #middleName, #lastName, #address, #email, #phone").val('');
     $("input[name='gender']").prop('checked', false); 
+
+    // Reset and disable country, state, and city dropdowns
+    $("#country").val('').trigger('change');  
+    $("#state").val('').prop('disabled', true);
+    $("#city").val('').prop('disabled', true);
 });
 }
-
-function updatePagination(totalItems, currentPage) {
+function updatePagination(totalItems) {
     let totalPages = Math.ceil(totalItems / rowsPerPage);
     let paginationDiv = $("#pagination");
     paginationDiv.empty();
@@ -265,45 +277,30 @@ function updatePagination(totalItems, currentPage) {
         changePage(pageNumber);
     });
 }
-
 function changePage(pageNumber) {
     currentPage = pageNumber;
     displayTable(formDataArray, currentPage);
 }
 function filterData() {
-    let filterFirstName = $("#filterFirstName").val().toLowerCase();
-    let filterLastName = $("#filterLastName").val().toLowerCase();
-    let filterMiddleName = $("#filterMiddleName").val().toLowerCase();
-    let filterAddress = $("#filterAddress").val().toLowerCase();
-    let filterPhone = $("#filterPhone").val().toLowerCase();
-    let filterGender = $("#filterGender").val().toLowerCase();
-    let filterCountry = $("#filterCountry").val().toLowerCase();
-    let filterState = $("#filterState").val().toLowerCase();
-    let filterCity = $("#filterCity").val().toLowerCase();
+    let searchQuery = $("#searchInput").val().toLowerCase().trim(); // Get search input value
 
-    let filteredData = formDataArray.filter(item => 
-        (filterFirstName === "" || item.firstName.toLowerCase().includes(filterFirstName)) &&
-        (filterLastName === "" || item.lastName.toLowerCase().includes(filterLastName)) &&
-        (filterMiddleName === "" || item.middleName.toLowerCase().includes(filterMiddleName)) &&
-        (filterAddress === "" || item.address.toLowerCase().includes(filterAddress)) &&
-        (filterPhone === "" || item.phone.toLowerCase().includes(filterPhone)) &&
-        (filterGender === "" || item.gender.toLowerCase().includes(filterGender)) &&
-        (filterCountry === "" || item.country.toLowerCase().includes(filterCountry)) &&
-        (filterState === "" || item.state.toLowerCase().includes(filterState)) &&
-        (filterCity === "" || item.city.toLowerCase().includes(filterCity))
+    let filteredData = formDataArray.filter(item =>
+        Object.values(item).some(value =>
+            value && typeof value === "string" && value.toLowerCase().includes(searchQuery)
+        )
     );
 
-    displayTable(filteredData, 1); // Show filtered results from page 1
+    if (filteredData.length === 0) {
+        // If no matching data, display "No data found" message
+        $("#tableBody").html('<tr><td colspan="100%" style="text-align: center; font-weight: bold; color: red;">No data found</td></tr>');
+    } else {
+        displayTable(filteredData, 1); // Display filtered results
+    }
 }
 
-$("#filterFirstName, #filterLastName, #filterMiddleName, #filterAddress, #filterPhone, #filterGender, #filterCountry, #filterState, #filterCity").on("input", function () {
-    filterData(); 
-});
-
-displayTable(formDataArray, currentPage);
 
 
-
+//=======JQuery==========
 $(document).ready(function () {
    let input = document.querySelector("#phone");
     let iti = window.intlTelInput(input, {
@@ -312,33 +309,37 @@ $(document).ready(function () {
         preferredCountries: ["in", "us"],
         
     });
-
     $("#country").change(function () {
         let selectedCountry = $(this).val().toLowerCase();
         iti.setCountry(selectedCountry === "india" ? "in" : "us");
     });
-
-    
     $("#phone").on("input", function () {
         this.value = this.value.replace(/\D/g, "");
         let phoneNumber = $(this).val();
         $("#phoneError").text(/^[0-9]{10}$/.test(phoneNumber) ? "" : "Phone number must be exactly 10 digits.");
     });
-
-    
     let storedData = localStorage.getItem("formData");
     if (storedData) {
         displayTable(JSON.parse(storedData), 1);
     }
-
-
+    $("input, textarea, select").on("input change", function() {
+        $(this).siblings(".error-msg").remove();
+     });
+     $("input[name='gender']").on("change", function() {
+         $("#gender").next(".error-msg").remove();
+     });
+     $(".terms-check input[type='checkbox']").on("change", function() {
+         $(".terms-check").next(".error-msg").remove();
+     });
+     // Trigger filtering when the user types in the search input
+     $("#searchInput").on("input", function () {
+         filterData(); 
+     });
     $("#myForm").submit(function (event) {
         event.preventDefault();
     
-       
         if (!validateForm()) return;
     
-       
         let formData = {
             firstName: $("#firstName").val(),
             middleName: $("#middleName").val(),
@@ -352,12 +353,10 @@ $(document).ready(function () {
             city: $("#city").val(),
         };
     
-        
         let formDataArray = JSON.parse(localStorage.getItem("formData")) || [];
         formDataArray.push(formData);
         localStorage.setItem("formData", JSON.stringify(formDataArray));
     
-        
         $("#myForm")[0].reset();
         $(".error-msg").remove();
         showSuccessMessage("Data submitted successfully!");
@@ -369,35 +368,44 @@ $(document).ready(function () {
         $("body").prepend(successMessage);
         setTimeout(() => $(".success-message").fadeOut(), 2000);
     }
-    
     $("input").attr("autocomplete", "off");
-
-    
     const states = { India: ["Gujarat", "Maharashtra", "Rajasthan"], USA: ["California", "Texas", "New York"] };
     const cities = {
         Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Morbi"], Maharashtra: ["Mumbai", "Pune", "Nagpur"],
         Rajasthan: ["Jaipur", "Jodhpur", "Udaipur"], California: ["Los Angeles", "San Francisco", "San Diego"],
         Texas: ["Houston", "Dallas", "Austin"], NewYork: ["New York City", "Buffalo", "Rochester"]
     };
-
     $("#country").change(function () {
         let selectedCountry = $(this).val();
-        $("#state").prop("disabled", false).empty().append('<option value="">Select State</option>');
+    
+        // Reset & disable state and city dropdowns
+        $("#state").prop("disabled", !selectedCountry).empty().append('<option value="">Select State</option>');
         $("#city").prop("disabled", true).empty().append('<option value="">Select City</option>');
-        states[selectedCountry]?.forEach(state => $("#state").append(`<option value="${state}">${state}</option>`));
+    
+        // Populate states if a country is selected
+        if (selectedCountry && states[selectedCountry]) {
+            states[selectedCountry].forEach(state => {
+                $("#state").append(`<option value="${state}">${state}</option>`);
+            });
+        }
     });
-
     $("#state").change(function () {
         let selectedState = $(this).val();
-        $("#city").prop("disabled", false).empty().append('<option value="">Select City</option>');
-        cities[selectedState]?.forEach(city => $("#city").append(`<option value="${city}">${city}</option>`));
+    
+        // Reset & disable city dropdown
+        $("#city").prop("disabled", !selectedState).empty().append('<option value="">Select City</option>');
+    
+        // Populate cities if a state is selected
+        if (selectedState && cities[selectedState]) {
+            cities[selectedState].forEach(city => {
+                $("#city").append(`<option value="${city}">${city}</option>`);
+            });
+        }
     });
-
-   
-
     function showSuccessMessage(message) {
         let successMessage = $('<div class="success-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
         $("body").prepend(successMessage);
         setTimeout(() => $(".success-message").fadeOut(), 2000);
     }
 });
+
