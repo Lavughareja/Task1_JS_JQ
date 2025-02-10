@@ -3,25 +3,33 @@ let formDataArray = JSON.parse(localStorage.getItem("formData")) || [];
 let currentPage = 1;
 const rowsPerPage = 3;
 
+function formatTime(seconds) {
+    return seconds < 10 ? "00:0" + seconds : "00:" + seconds;
+}
+let timerInterval;
 function startTimer() {
-    let timeLeft = 30; // Set timer duration
-    let timer = setInterval(function () {
+    let timeLeft = 30; // Set timer duration in seconds
+
+    // Clear any previous timer (just in case)
+    clearInterval(timerInterval);
+
+    // Reset the timer container's HTML so it contains a <span>
+    $("#timer").html('<span>' + timeLeft + '</span> seconds');
+
+    // Start the countdown interval
+    timerInterval = setInterval(function () {
         timeLeft--;
         $("#timer span").text(timeLeft);
 
         if (timeLeft <= 0) {
-            clearInterval(timer);
-            $("input, button").prop("disabled", true); // Disable form
+            clearInterval(timerInterval);
+            // Disable the form when time is up.
+            $("#myForm :input").prop("disabled", true);
             $("#timer").text("Time is up! Form is disabled.");
         }
     }, 1000);
 }
-
-// Call the function to start the timer
 startTimer();
-
-
-
 function validateForm() {
     let isValid = true;
     let firstName = $("#firstName").val().trim();
@@ -101,29 +109,27 @@ function validateForm() {
 
     return isValid;
 }
-setInterval(myTimer);
- 
 function myTimer() {
   const d = new Date();
   document.getElementById("demo").innerHTML = d.toLocaleTimeString();
 }
+setInterval(myTimer);
 function displayTable(formDataArray, currentPage) {
     if (!formDataArray || formDataArray.length === 0) {
-        console.log("No data available.");
+        $("#formContainer").html("<p>No data available.</p>");
         return; 
     }
 
     const recordsPerPage = 3;  
     const totalPages = Math.ceil(formDataArray.length / recordsPerPage); 
 
- 
     if (currentPage < 1) currentPage = 1;
     if (currentPage > totalPages) currentPage = totalPages;
 
-   
     const startIndex = (currentPage - 1) * recordsPerPage;
     const endIndex = Math.min(startIndex + recordsPerPage, formDataArray.length);
 
+    // Use your original table markup (with border="1")
     let tableHTML = ` 
         <br/><h3>Submitted Information</h3>
         <table border="1">
@@ -144,10 +150,8 @@ function displayTable(formDataArray, currentPage) {
             </thead>
             <tbody id="tableBody">`;
 
-   
     for (let i = startIndex; i < endIndex; i++) {
         const formData = formDataArray[i];
-      
         if (formData) {
             tableHTML += `
                 <tr data-index="${i}">
@@ -161,11 +165,9 @@ function displayTable(formDataArray, currentPage) {
                     <td>${formData.country || 'N/A'}</td>
                     <td>${formData.state || 'N/A'}</td>
                     <td>${formData.city || 'N/A'}</td>
-                   
                     <td>
-                        <i class=" editBtn fa-solid fa-pen editIcon"></i>
-                       
-                        <i class=" deleteBtn fa-solid fa-trash deleteIcon"></i>
+                        <i class="editBtn fa-solid fa-pen editIcon" style="cursor:pointer; margin-right:10px;"></i>
+                        <i class="deleteBtn fa-solid fa-trash deleteIcon" style="cursor:pointer;"></i>
                     </td>
                 </tr>`;
         }
@@ -173,7 +175,7 @@ function displayTable(formDataArray, currentPage) {
 
     tableHTML += `</tbody></table>`;
 
-   
+    // Pagination controls (as in your original code)
     tableHTML += `
         <div class="pagination">
             <button id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
@@ -183,84 +185,92 @@ function displayTable(formDataArray, currentPage) {
 
     $("#formContainer").html(tableHTML);
 
-   
+    // Bind pagination events.
     $("#prevPage").click(function () {
         if (currentPage > 1) {
             displayTable(formDataArray, currentPage - 1);
         }
     });
-
     $("#nextPage").click(function () {
         if (currentPage < totalPages) {
             displayTable(formDataArray, currentPage + 1);
         }
     });
 
-    
+    // Use a global variable for editing; initialize if not set.
+    window.editIndex = (window.editIndex === undefined) ? -1 : window.editIndex;
+
+
+    // EDIT functionality:
     $(".editBtn").click(function () {
+        // Clear any existing timer.
+        clearInterval(timerInterval);
+    
+        // Re-enable the form if it was disabled.
+        $("#myForm :input").prop("disabled", false);
+    
+        // Reset the timer display (ensure the <span> exists).
+        $("#timer").html('<span>30</span> seconds');
+    
+        // Restart the timer.
+        startTimer();
+    
+        // Then load the data for editing...
         let rowIndex = $(this).closest("tr").data("index");
-        let formData = formDataArray[rowIndex];
-
-
-        
-        if (formData) {
-            $("#firstName").val(formData.firstName);
-            $("#middleName").val(formData.middleName);
-            $("#lastName").val(formData.lastName);
-            $("#address").val(formData.address);
-            $("#email").val(formData.email);
-            $("#phone").val(formData.phone);
-            $("input[name='gender'][value='" + formData.gender + "']").prop("checked", true);
-            $("#country").val(formData.country).trigger("change");
-            $("#state").val(formData.state).trigger("change");
-            $("#city").val(formData.city);
-            
-            formDataArray.splice(rowIndex, 1);
-            
-            localStorage.setItem("formData", JSON.stringify(formDataArray));
-            displayTable(formDataArray, currentPage);
+        window.editIndex = rowIndex;
+        let contactsArray = JSON.parse(localStorage.getItem("formData")) || [];
+        let record = contactsArray[rowIndex];
+        if (record) {
+            $("#firstName").val(record.firstName);
+            $("#middleName").val(record.middleName);
+            $("#lastName").val(record.lastName);
+            $("#address").val(record.address);
+            $("#email").val(record.email);
+            $("#phone").val(record.phone);
+            $("input[name='gender'][value='" + record.gender + "']").prop("checked", true);
+            $("#country").val(record.country).trigger("change");
+            $("#state").val(record.state).trigger("change");
+            $("#city").val(record.city);
         }
-     });
-
-   
-   $(".deleteBtn").click(function () {
-    let rowIndex = $(this).closest("tr").data("index");
-     
+    });
     
-    let confirmation = window.confirm("Are you sure you want to delete this record?");
-
     
-    if (confirmation) {
-        if (formDataArray[rowIndex]) {
-            formDataArray.splice(rowIndex, 1); 
-            showdeleteMessage("Data delete successfully!");
-             setTimeout(function () {
-            $(".delete-message").fadeOut();
-            }, 2000);
-            localStorage.setItem("formData", JSON.stringify(formDataArray)); 
-            displayTable(formDataArray, currentPage); 
-        }
-    }
-function showdeleteMessage(message) {
-                
-                let successMessage = $('<div class="delete-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: red; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
-                $("body").prepend(successMessage);
+    
+    
+    
+
+    // DELETE functionality:
+    $(".deleteBtn").click(function () {
+        let rowIndex = $(this).closest("tr").data("index");
+        let confirmation = window.confirm("Are you sure you want to delete this record?");
+        if (confirmation) {
+            if (formDataArray[rowIndex]) {
+                formDataArray.splice(rowIndex, 1); 
+                showdeleteMessage("Data deleted successfully!");
+                setTimeout(function () {
+                    $(".delete-message").fadeOut();
+                }, 2000);
+                localStorage.setItem("formData", JSON.stringify(formDataArray)); 
+                displayTable(formDataArray, currentPage); 
             }
-});
-$("#clearBtn").click(function () {
-    $("#myForm")[0].reset(); 
+        }
+        function showdeleteMessage(message) {
+            let successMessage = $('<div class="delete-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: red; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
+            $("body").prepend(successMessage);
+        }
+    });
 
-    $(".error-msg").remove();  
-    $("input, select").removeClass("error");  
-
-    $("#firstName, #middleName, #lastName, #address, #email, #phone").val('');
-    $("input[name='gender']").prop('checked', false); 
-
-    // Reset and disable country, state, and city dropdowns
-    $("#country").val('').trigger('change');  
-    $("#state").val('').prop('disabled', true);
-    $("#city").val('').prop('disabled', true);
-});
+    // Clear button event.
+    $("#clearBtn").click(function () {
+        $("#myForm")[0].reset(); 
+        $(".error-msg").remove();  
+        $("input, select").removeClass("error");  
+        $("#firstName, #middleName, #lastName, #address, #email, #phone").val('');
+        $("input[name='gender']").prop('checked', false);  
+        $("#country").val('').trigger('change');  
+        $("#state").val('').prop('disabled', true);
+        $("#city").val('').prop('disabled', true);
+    });
 }
 function updatePagination(totalItems) {
     let totalPages = Math.ceil(totalItems / rowsPerPage);
@@ -298,10 +308,10 @@ function filterData() {
     }
 }
 
-
-
 //=======JQuery==========
 $(document).ready(function () {
+
+
    let input = document.querySelector("#phone");
     let iti = window.intlTelInput(input, {
         initialCountry: "in",
@@ -331,16 +341,25 @@ $(document).ready(function () {
      $(".terms-check input[type='checkbox']").on("change", function() {
          $(".terms-check").next(".error-msg").remove();
      });
+
+     if ($("#directoryContainer").is(":visible")) {
+        startTimer();
+    }
      // Trigger filtering when the user types in the search input
      $("#searchInput").on("input", function () {
          filterData(); 
      });
-    $("#myForm").submit(function (event) {
-        event.preventDefault();
-    
-        if (!validateForm()) return;
-    
-        let formData = {
+     $("#myForm").submit(function(e) {
+        e.preventDefault();
+        
+        // Call your validation function. If validation fails, stop processing.
+        if (!validateForm()) {
+            // Optionally, you can display a general message here.
+            return;
+        }
+        
+        // If validation passes, gather the form data.
+        var formData = {
             firstName: $("#firstName").val(),
             middleName: $("#middleName").val(),
             lastName: $("#lastName").val(),
@@ -350,24 +369,46 @@ $(document).ready(function () {
             gender: $("input[name='gender']:checked").val(),
             country: $("#country").val(),
             state: $("#state").val(),
-            city: $("#city").val(),
+            city: $("#city").val()
         };
-    
-        let formDataArray = JSON.parse(localStorage.getItem("formData")) || [];
-        formDataArray.push(formData);
-        localStorage.setItem("formData", JSON.stringify(formDataArray));
-    
-        $("#myForm")[0].reset();
-        $(".error-msg").remove();
-        showSuccessMessage("Data submitted successfully!");
         
-        displayTable(formDataArray, 1);
+        // Retrieve existing contacts from localStorage or initialize an empty array.
+        var contacts = localStorage.getItem("formData");
+        contacts = contacts ? JSON.parse(contacts) : [];
+        
+        // Check if we're in edit mode (using a global editIndex variable, for example).
+        if (window.editIndex !== undefined && window.editIndex !== -1) {
+            contacts[window.editIndex] = formData;
+            showSuccessMessage("Data updated successfully");
+            window.editIndex = -1; // Reset the edit index after updating.
+        } else {
+            contacts.push(formData);
+            showSuccessMessage("Data saved successfully");
+        }
+        
+        // Save updated contacts array to localStorage.
+        localStorage.setItem("formData", JSON.stringify(contacts));
+        
+        // Reset the form.
+        $("#myForm")[0].reset();
+        
+        // Reload the table (assuming you have a function displayTable to refresh the view).
+        displayTable(contacts, 1);
     });
+    
+    
+    
+    
     function showSuccessMessage(message) {
-        let successMessage = $('<div class="success-message" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; font-weight: bold;">' + message + '</div>');
+        let successMessage = $('<div class="alert alert-success" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); font-weight: bold;">' + message + '</div>');
         $("body").prepend(successMessage);
-        setTimeout(() => $(".success-message").fadeOut(), 2000);
+        setTimeout(() => {
+            successMessage.fadeOut("slow", function() {
+                $(this).remove();
+            });
+        }, 2000);
     }
+    
     $("input").attr("autocomplete", "off");
     const states = { India: ["Gujarat", "Maharashtra", "Rajasthan"], USA: ["California", "Texas", "New York"] };
     const cities = {
